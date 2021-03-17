@@ -44,8 +44,8 @@ class dino:
 def draw_rect(data, x_range, y_range):
 	
 	for i in range(x_range[0], x_range[1]):
-			for j in range(y_range[0], y_range[1]):
-				data[i, j] = 0
+		for j in range(y_range[0], y_range[1]):
+			data[i, j] = 0
 
 def check_hit(data):
 	for i in range(770, 850):
@@ -69,7 +69,7 @@ def main():
 	
 		# Draw rectangle on screen
 		#draw_rect(data, (770, 850), (270, 300))
-	
+
 		break
 	
 	image.show()
