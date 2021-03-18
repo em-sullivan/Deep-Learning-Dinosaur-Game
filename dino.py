@@ -63,6 +63,15 @@ def main():
 
 		# Capture image of current game field
 		# Convert to grayscale
+		'''
+		Eric's monitor = (650, 170, 1300, 350)
+		John's monitor = (500, 330, 1397, 522)
+		Note:
+			For consistency have this image grab be:
+			- left and right edge --> as close as possible to the edge of the terrain
+			- top edge            --> as close as possible to top edge of HI-SCORE
+			- bottom edge         --> as close as possible to bottom of Dino's feet
+		'''
 		image = ImageGrab.grab(bbox = (650, 170, 1300, 350)).convert('L')
 		data = image.load()
 		#check_hit(data)
