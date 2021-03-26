@@ -2,7 +2,7 @@
 Code for playing dinoasur game
 '''
 import pyautogui
-from PIL import Image, ImageGrab
+from PIL import Image, ImageGrab, ImageOps
 import time
 
 
@@ -47,11 +47,18 @@ def draw_rect(data, x_range, y_range):
         for j in range(y_range[0], y_range[1]):
             data[i, j] = 0
 
+def jump():
+    pyautogui.keyDown('space')
+    time.sleep(.05)
+    print("Jump!")
+    time.sleep(.10)
+    pyautogui.keyUp('space')
+
 def check_hit(data):
-    for i in range(770, 850):
-        for j in range(280, 310):
-            if data[i, j] < 100:
-                pyautogui.keyDown('up')
+    for i in range(100, 140):
+        for j in range(100, 130):
+            if data[i, j] < 150:
+                jump()     
 def main():
 
     #time.sleep(5)
@@ -63,25 +70,41 @@ def main():
 
         # Capture image of current game field
         # Convert to grayscale
-		'''
+        '''
 		Eric's monitor = (650, 170, 1300, 350)
 		John's monitor = (500, 330, 1397, 522)
 		Note:
-			For consistency have this image grab be:
-			- left and right edge --> as close as possible to the edge of the terrain
-			- top edge            --> as close as possible to top edge of HI-SCORE
-			- bottom edge         --> as close as possible to bottom of Dino's feet
+		For consistency have this image grab be:
+		- left and right edge --> as close as possible to the edge of the terrain
+		- top edge            --> as close as possible to top edge of HI-SCORE
+		- bottom edge         --> as close as possible to bottom of Dino's feet
 		'''
         image = ImageGrab.grab(bbox = (650, 170, 1300, 350)).convert('L')
+        #image = ImageOps.invert(image)
         data = image.load()
         #check_hit(data)
+        #print(data[70,110])
 	
-        # Draw rectangle on screen
-        #draw_rect(data, (770, 850), (270, 300))
-
+        # Draw rectangle on screen - little rectangle in front
+        # of the dinosaur
+        # Eric - 80, 90, 100, 140 - Little rectangle in front of dino
+        draw_rect(data, (100, 180), (100, 120))
+        #print(data[80,100])
         break
 	
     image.show()
 
+def runTest():
+    print("Test playing starting...")
+    time.sleep(5)
+    jump()
+    while True:
+        image = ImageGrab.grab(bbox = (650, 170, 1300, 350)).convert('L')
+        data = image.load()
+        check_hit(data)
+
+    return
+
 if __name__ == '__main__':
-    main()
+    #main()
+    runTest()
