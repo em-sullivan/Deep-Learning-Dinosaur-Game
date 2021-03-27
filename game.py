@@ -9,11 +9,18 @@ from pygame.locals import *
 
 class Dinosaur:
 
+    DINO_SIZE_STAND = (25, 50)
+    DINO_POS_STAND = (50, 250)
+    DINO_SIZE_DUCK = (50, 25)
+    DINO_POS_DUCK = (50, 275)
+
+
     def __init__(self):
         
-        self.size = (25, 50)
-        self.position = self.x, self.y = (50, 250)
+        self.size = self.DINO_SIZE_STAND
+        self.position = self.x, self.y = self.DINO_POS_STAND
         self.speed = 0
+        self.score = 0
         self.ducking = False
 
     def toggle_duck(self):
@@ -21,6 +28,8 @@ class Dinosaur:
         Toggle the ducking state of the dinosaur
         '''
         self.ducking = not self.ducking
+        # Little test to be srue score is working
+        self.score += 10
 
     def check_positiion(self):
         '''
@@ -28,12 +37,12 @@ class Dinosaur:
         standing, ducking and jumping (not implemented yet) states
         '''
         if self.ducking:
-            self.size = (50, 25)
-            self.position = (50, 275)
+            self.size = self.DINO_SIZE_DUCK
+            self.position = self.DINO_POS_DUCK
         
         else:
-            self.size = (25, 50)
-            self.position = (50, 250)
+            self.size = self.DINO_SIZE_STAND
+            self.position = self.DINO_POS_STAND
 
     def draw(self, surface):
         '''
@@ -58,8 +67,15 @@ class App:
 
     def on_init(self):
         pygame.init()
+        pygame.display.set_caption("Dino Game")
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
+        self.clock = pygame.time.Clock()
+
+        # Init for text
+        self.score_font = pygame.font.SysFont('timesnewroman', 20)
+	
+
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -86,8 +102,13 @@ class App:
         # Draw dinoasur
         self.dino.draw(self._display_surf)
 
+        # Display score in left corner
+        score = self.score_font.render(str(self.dino.score), True, (128, 128, 128))
+        self._display_surf.blit(score, (10, 5))
+
         # Update display
         pygame.display.update()
+
 
     def on_cleanup(self):
         pygame.quit()
@@ -101,6 +122,7 @@ class App:
                 self.on_event(event)
             self.on_loop()
             self.on_render()
+            self.clock.tick(30)
 
         self.on_cleanup()
 
