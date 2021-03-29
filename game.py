@@ -22,10 +22,11 @@ class Dinosaur:
 
     def __init__(self):
         
-        self.size = (self.DINO_SIZE_STAND_X, self.DINO_SIZE_STAND_Y)
-        self.position = self.x, self.y = (self.DINO_POS_STAND_X, self.DINO_POS_STAND_Y)
+        self.size = [self.DINO_SIZE_STAND_X, self.DINO_SIZE_STAND_Y]
+        self.position = self.x, self.y = [self.DINO_POS_STAND_X, self.DINO_POS_STAND_Y]
         self.speed = 0
         self.score = 0
+        self.alive = True
         self.ducking = False
         self.jumping = False
         self.reachedTop = False
@@ -49,24 +50,28 @@ class Dinosaur:
 
         # Duck
         elif self.ducking:
-            self.size = (self.DINO_SIZE_DUCK_X, self.DINO_SIZE_DUCK_Y)
-            self.position = (self.DINO_POS_DUCK_X, self.DINO_POS_DUCK_Y)
+            self.size = [self.DINO_SIZE_DUCK_X, self.DINO_SIZE_DUCK_Y]
+            self.position = [self.DINO_POS_DUCK_X, self.DINO_POS_DUCK_Y]
 
         # Move normally
         else:
-            self.size = (self.DINO_SIZE_STAND_X, self.DINO_SIZE_STAND_Y)
-            self.position = (self.DINO_POS_STAND_X, self.DINO_POS_STAND_Y)
+            self.size = [self.DINO_SIZE_STAND_X, self.DINO_SIZE_STAND_Y]
+            self.position = [self.DINO_POS_STAND_X, self.DINO_POS_STAND_Y]
+
+    def check_hit(self, obs):
+        if self.position[0] == obs.pos[0] and self.position[1] == obs.pos[1]:
+            self.alive = False
 
     def jump(self):
 
         # Jump until max jump height is reached
         if self.position[1] > self.DINO_JUMP_MAX and not self.reachedTop:
-            self.position = (self.position[0], self.position[1] - 10)
+            self.position[1] -= 10
 
         # Decrease Jump going back down
         else:
             self.reachedTop = True
-            self.position = (self.position[0], self.position[1] + 10)
+            self.position[1] += 10
         
         # Stop jump once groun is reached
         if self.position[1] == self.DINO_POS_STAND_Y:
@@ -83,13 +88,13 @@ class Dinosaur:
         body = pygame.Rect(self.position, self.size)
         pygame.draw.rect(surface, (0, 200, 0), body)
 
-class Obs:
 
+class Obs:
     def __init__(self):
 
         self.length = 50
         self.width = 50
-        self.pos = [400, 200]
+        self.pos = [700, 200]
 
     def move(self):
         self.pos[0] -= 10
@@ -148,8 +153,8 @@ class App:
 
         # Check current position (well, its really the size right not) of dina
         self.dino.check_positiion()
-
         self.bad.move()
+        self.dino.check_hit(self.bad)
 
     def on_render(self):
         # White Background
@@ -180,7 +185,7 @@ class App:
         if self.on_init() == False:
             self._running = False
 
-        while(self._running):
+        while(self._running and self.dino.alive):
 
             for event in pygame.event.get():
                 self.on_event(event)
