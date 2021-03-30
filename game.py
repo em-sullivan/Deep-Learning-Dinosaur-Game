@@ -59,8 +59,26 @@ class Dinosaur:
             self.position = [self.DINO_POS_STAND_X, self.DINO_POS_STAND_Y]
 
     def check_hit(self, obs):
-        if self.position[0] == obs.pos[0] and self.position[1] == obs.pos[1]:
+        # Awful hit detection
+        if self.check_x_hit(obs) and self.check_y_hit(obs):
             self.alive = False
+
+    def check_x_hit(self, obs):
+        # Detects if matched up in x position
+        if self.position[0] <= obs.pos[0] and (self.position[0] + self.size[0] - 1) >= obs.pos[0]:
+            return True
+        elif self.position[0] <= (obs.pos[0] + obs.width - 1) and (self.position[0] + self.size[0] - 1) >= (obs.pos[0] + obs.width - 1):
+            return True
+        return False
+
+    def check_y_hit(self, obs):
+        # Detects if matched up in y position
+        if self.position[1] <= obs.pos[1] and (self.position[1] + self.size[1] - 1) >= obs.pos[1]:
+            return True
+        elif self.position[1] <= (obs.pos[1] + obs.length - 1) and (self.position[1] + self.size[1] - 1) >= (obs.pos[1] + obs.length - 1):
+            return True
+        return False
+
 
     def jump(self):
 
@@ -94,7 +112,7 @@ class Obs:
 
         self.length = 50
         self.width = 50
-        self.pos = [700, 200]
+        self.pos = [700, 250]
 
     def move(self):
         self.pos[0] -= 10
