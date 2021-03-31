@@ -107,14 +107,11 @@ class Dinosaur:
 
 class Obs:
 
-    GROUND_TYPES = ((50, 50), (25, 75))
-    FLYING_TYPE = (50, 25)
+    def __init__(self, length = 50, width = 50, pos = [700, 250]):
 
-    def __init__(self):
-
-        self.length = 50
-        self.width = 50
-        self.pos = [700, 250]
+        self.length = length
+        self.width = width
+        self.pos = pos
 
     def move(self):
         self.pos[0] -= 10
@@ -123,6 +120,34 @@ class Obs:
         body = pygame.Rect(self.pos, (self.length, self.width))
         pygame.draw.rect(surface, (0, 0, 0), body)
 
+# Constsnts for enemies
+GROUND_TYPES = ((50, 50), (25, 55))
+FLYING_TYPE = (50, 25)
+
+class ObsList:
+
+    def __init__(self):
+
+        self.enemies = []
+        self.speed = 10
+
+    def add_random_enemy(self):
+        self.enemies.append(Obs(25, 50, [700, 250]))
+
+    def move_enemies(self):
+        for i in self.enemies:
+            i.move()
+
+    def remove_enemies(self):
+        # Remove enemie from list if it is out of bounds
+        for i in self.enemies:
+            if i.pos[0] < -i.width:
+                self.enemies.remove(i)
+
+    def draw_obs(self, surface):
+        # Draw each object int 
+        for i in self.enemies:
+            i.draw(surface)
 
 class App:
 
@@ -136,7 +161,7 @@ class App:
         self.dino = Dinosaur()
 
         # Test - Just draw an obstacle
-        self.bad = Obs()
+        self.enemy = ObsList()
 
         # Tick amount for score
         self.tick_amt = 0
@@ -147,6 +172,9 @@ class App:
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         self.clock = pygame.time.Clock()
+
+        # Add random enemey
+        self.enemy.add_random_enemy()
 
         # Init for text
         self.score_font = pygame.font.SysFont('mono', 20)
@@ -174,13 +202,21 @@ class App:
 
         # Check current position (well, its really the size right not) of dina
         self.dino.check_positiion()
-        self.bad.move()
-        self.dino.check_hit(self.bad)
+        #self.enemy.move()
+
+        if self.tick_amt % 30 == 0:
+            self.enemy.add_random_enemy()
+
+        self.enemy.move_enemies()
+        self.enemy.remove_enemies()
+        
+        for current_enemy in self.enemy.enemies:
+            self.dino.check_hit(current_enemy)
 
         # Update player score
-        if self.tick_amt == 3:
+        if self.tick_amt % 3 == 0:
             self.dino.score += 1
-            self.tick_amt = 0
+
 
     def on_render(self):
         # White Background
@@ -194,7 +230,8 @@ class App:
         self.dino.draw(self._display_surf)
 
         # Draw obstacles
-        self.bad.draw(self._display_surf)
+        #self.enemy.draw(self._display_surf)
+        self.enemy.draw_obs(self._display_surf)
 
         # Display score in left corner
         score = self.score_font.render(str(self.dino.score), True, (128, 128, 128))
@@ -220,7 +257,7 @@ class App:
             self.on_render()
             self.clock.tick(30)
             self.tick_amt += 1
-
+        
         self.on_cleanup()
 
 if __name__ == "__main__":
