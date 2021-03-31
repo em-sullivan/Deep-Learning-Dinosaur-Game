@@ -36,8 +36,6 @@ class Dinosaur:
         Toggle the ducking state of the dinosaur
         '''
         self.ducking = not self.ducking
-        # Little test to be srue score is working
-        self.score += 10
 
     def check_positiion(self):
         '''
@@ -83,7 +81,7 @@ class Dinosaur:
     def jump(self):
 
         # Jump until max jump height is reached
-        if self.position[1] > self.DINO_JUMP_MAX and not self.reachedTop:
+        if self.position[1] > self.DINO_JUMP_MAX and not self.reachedTop and not self.ducking:
             self.position[1] -= 10
 
         # Decrease Jump going back down
@@ -108,6 +106,10 @@ class Dinosaur:
 
 
 class Obs:
+
+    GROUND_TYPES = ((50, 50), (25, 75))
+    FLYING_TYPE = (50, 25)
+
     def __init__(self):
 
         self.length = 50
@@ -118,7 +120,6 @@ class Obs:
         self.pos[0] -= 10
 
     def draw(self, surface):
-
         body = pygame.Rect(self.pos, (self.length, self.width))
         pygame.draw.rect(surface, (0, 0, 0), body)
 
@@ -137,6 +138,9 @@ class App:
         # Test - Just draw an obstacle
         self.bad = Obs()
 
+        # Tick amount for score
+        self.tick_amt = 0
+
     def on_init(self):
         pygame.init()
         pygame.display.set_caption("Dino Game")
@@ -153,10 +157,9 @@ class App:
 
         if event.type == pygame.KEYDOWN:
             if event.key == K_DOWN:
-                # Can't duck when Jumping!
-                if self.dino.jumping is False:
-                    print("Down!")
-                    self.dino.ducking = True
+                # Duck or cancel jump
+                print("Down!")
+                self.dino.toggle_duck()
             
             if event.key == K_SPACE or event.key == K_UP:
                 # Can't Jump when ducking!
@@ -173,6 +176,11 @@ class App:
         self.dino.check_positiion()
         self.bad.move()
         self.dino.check_hit(self.bad)
+
+        # Update player score
+        if self.tick_amt == 3:
+            self.dino.score += 1
+            self.tick_amt = 0
 
     def on_render(self):
         # White Background
@@ -200,6 +208,7 @@ class App:
         pygame.quit()
 
     def on_execute(self):
+
         if self.on_init() == False:
             self._running = False
 
@@ -210,6 +219,7 @@ class App:
             self.on_loop()
             self.on_render()
             self.clock.tick(30)
+            self.tick_amt += 1
 
         self.on_cleanup()
 
