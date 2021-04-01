@@ -107,7 +107,7 @@ class Dinosaur:
 
 class Obs:
 
-    def __init__(self, length = 50, width = 50, pos = [700, 250]):
+    def __init__(self, width = 50, length = 50, pos = [700, 250]):
 
         self.length = length
         self.width = width
@@ -117,7 +117,7 @@ class Obs:
         self.pos[0] -= 10
 
     def draw(self, surface):
-        body = pygame.Rect(self.pos, (self.length, self.width))
+        body = pygame.Rect(self.pos, (self.width, self.length))
         pygame.draw.rect(surface, (0, 0, 0), body)
 
 # Constsnts for enemies
