@@ -160,10 +160,10 @@ class App:
         # Player
         self.dino = Dinosaur()
 
-        # Test - Just draw an obstacle
+        # Test - list of obsticalts
         self.enemy = ObsList()
 
-        # Tick amount for score
+        # Tick amount for score, spawn stuff
         self.tick_amt = 0
 
     def on_init(self):
