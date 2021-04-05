@@ -113,8 +113,8 @@ class Obs:
         self.width = width
         self.pos = pos
 
-    def move(self):
-        self.pos[0] -= 10
+    def move(self, speed_increase = 0):
+        self.pos[0] -= (10 + speed_increase)
 
     def draw(self, surface):
         body = pygame.Rect(self.pos, (self.width, self.length))
@@ -134,9 +134,15 @@ class ObsList:
     def add_random_enemy(self):
         self.enemies.append(Obs(25, 50, [700, 250]))
 
-    def move_enemies(self):
+    def add_enemy(self, num):
+        if num == 1:
+            self.enemies.append(Obs(50, 50, [700, 250]))
+        else:
+            self.enemies.append(Obs(25, 50, [700, 250]))
+
+    def move_enemies(self, speed_increase = 0):
         for i in self.enemies:
-            i.move()
+            i.move(speed_increase)
 
     def remove_enemies(self):
         # Remove enemie from list if it is out of bounds
@@ -156,6 +162,8 @@ class App:
         self._display_surf = None
         self.size = self.width, self.height = 640, 400
         self.clock = None
+        self.speed_modifier = 0
+        self.random_spawn = 30
 
         # Player
         self.dino = Dinosaur()
@@ -204,10 +212,17 @@ class App:
         self.dino.check_positiion()
         #self.enemy.move()
 
-        if self.tick_amt % 30 == 0:
-            self.enemy.add_random_enemy()
+        # Randomly spawn enemy
+        if self.tick_amt % self.random_spawn == 0:
+            
+            #self.enemy.add_random_enemy()
+            self.enemy.add_enemy(random.randint(1,2))
 
-        self.enemy.move_enemies()
+            # Change random spawn rate
+            self.random_spawn += random.randint(20, 40)
+            print(self.random_spawn)
+
+        self.enemy.move_enemies(self.speed_modifier)
         self.enemy.remove_enemies()
         
         for current_enemy in self.enemy.enemies:
@@ -216,6 +231,10 @@ class App:
         # Update player score
         if self.tick_amt % 3 == 0:
             self.dino.score += 1
+
+        # Modify speed
+        if self.dino.score == 200:
+            self.speed_modifier += 1
 
 
     def on_render(self):
