@@ -121,8 +121,8 @@ class Obs:
         pygame.draw.rect(surface, (0, 0, 0), body)
 
 # Constsnts for enemies
-GROUND_TYPES = ((50, 50), (25, 55))
-FLYING_TYPE = (50, 25)
+GE = ((50, 50, 250), (25, 50, 250), (50, 25, 275), (60, 50, 250))
+FGE = ((50, 25, 225), (50, 25, 200), (25, 25, 225))
 
 class ObsList:
 
@@ -135,10 +135,25 @@ class ObsList:
         self.enemies.append(Obs(25, 50, [700, 250]))
 
     def add_enemy(self, num):
-        if num == 1:
-            self.enemies.append(Obs(50, 50, [700, 250]))
+
+        # Ground types
+        #if num == 1:
+        #    self.enemies.append(Obs(50, 50, [700, 250]))
+        #elif num == 2:
+        #    self.enemies.append(Obs(75, 75, [700, 225]))
+        #elif num == 3:
+        #    self.enemies.append(Obs(25, 75, [700, 225]))
+        #elif num == 4:
+        #    self.enemies.append(Obs(25, 50, [700, 250]))
+
+        # Air enemies - can still jump
+        #elif num == 5:
+        #    self.enemies.append(Obs(25, 25, [700, 225]))
+        if num < len(GE):
+            self.enemies.append(Obs(GE[num][0], GE[num][1], [700, GE[num][2]]))
         else:
-            self.enemies.append(Obs(25, 50, [700, 250]))
+            num = len(GE) - num
+            self.enemies.append(Obs(FGE[num][0], FGE[num][1], [700, FGE[num][2]]))
 
     def move_enemies(self, speed_increase = 0):
         for i in self.enemies:
@@ -163,7 +178,7 @@ class App:
         self.size = self.width, self.height = 640, 400
         self.clock = None
         self.speed_modifier = 0
-        self.random_spawn = 30
+        self.random_spawn = 60
 
         # Player
         self.dino = Dinosaur()
@@ -172,7 +187,7 @@ class App:
         self.enemy = ObsList()
 
         # Tick amount for score, spawn stuff
-        self.tick_amt = 0
+        self.tick_amt = 1
 
     def on_init(self):
         pygame.init()
@@ -216,7 +231,7 @@ class App:
         if self.tick_amt % self.random_spawn == 0:
             
             #self.enemy.add_random_enemy()
-            self.enemy.add_enemy(random.randint(1,2))
+            self.enemy.add_enemy(random.randint(0,6))
 
             # Change random spawn rate
             self.random_spawn += random.randint(20, 40)
