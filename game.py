@@ -256,7 +256,7 @@ class App:
         for current_enemy in self.enemy.enemies:
             self.dino.check_hit(current_enemy)
 
-        # Print dino frame data for clossest enemy
+        # Print dino frame data for the nearest enemy
         for current_enemy in self.enemy.enemies:
             if current_enemy.pos[0] - self.dino.position[0] > 0:
                 print(self.dino.dino_data(current_enemy, self.speed_modifier))
