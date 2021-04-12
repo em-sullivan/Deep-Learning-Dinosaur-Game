@@ -15,7 +15,7 @@ def model_crossover(parent_1, parent_2):
     Produce offspring based on parents
     '''
 
-    new_genes1 = parent_1
+    new_genes1 = parent_1 
     new_genes2 = parent_2
 
     gene = random.randint(0, len(new_genes1) - 1)
