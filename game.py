@@ -104,6 +104,20 @@ class Dinosaur:
         body = pygame.Rect(self.position, self.size)
         pygame.draw.rect(surface, (0, 200, 0), body)
 
+    
+    def dino_data(self, obs, speed):
+        '''
+        Input data the will go into neuarl network
+        '''
+        dataframe = []
+        dataframe.append(self.position[1])
+        dataframe.append(speed)
+        dataframe.append(obs.pos[0] - self.position[0])
+        dataframe.append(obs.pos[1])
+        dataframe.append(obs.length)
+        dataframe.append(obs.width)
+
+        return dataframe
 
 class Obs:
 
@@ -209,13 +223,13 @@ class App:
         if event.type == pygame.KEYDOWN:
             if event.key == K_DOWN:
                 # Duck or cancel jump
-                print("Down!")
+                #print("Down!")
                 self.dino.toggle_duck()
             
             if event.key == K_SPACE or event.key == K_UP:
                 # Can't Jump when ducking!
                 if self.dino.ducking is False:
-                    print("Jump!")
+                    #print("Jump!")
                     self.dino.jumping = True
 
         else:
@@ -235,7 +249,6 @@ class App:
 
             # Change random spawn rate
             self.random_spawn += random.randint(20, 40)
-            print(self.random_spawn)
 
         self.enemy.move_enemies(self.speed_modifier)
         self.enemy.remove_enemies()
@@ -243,13 +256,18 @@ class App:
         for current_enemy in self.enemy.enemies:
             self.dino.check_hit(current_enemy)
 
+        # Print dino frame data for clossest enemy
+        for current_enemy in self.enemy.enemies:
+            if current_enemy.pos[0] - self.dino.position[0] > 0:
+                print(self.dino.dino_data(current_enemy, self.speed_modifier))
+                break
+        
         # Update player score
         if self.tick_amt % 3 == 0:
             self.dino.score += 1
-
-        # Modify speed
-        if self.dino.score == 200:
-            self.speed_modifier += 1
+            # Modify speed
+            if self.dino.score == 100:
+                self.speed_modifier += 1
 
 
     def on_render(self):

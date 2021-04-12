@@ -30,9 +30,10 @@ class dino_pop:
         # Speed
         # Y-Position
         # Distance to nearest Object
-        # Height of nears Object
+        # Height of nearest Object
+        # Length of nearest object
         # Width of Nearest Object
-        model.add(Dense(10, input_dim = 5, activation = 'relu'))
+        model.add(Dense(10, input_dim = 6, activation = 'relu'))
         
         # Hidden Layer
         model.add(Dense(16, activation = 'relu'))
@@ -50,7 +51,7 @@ class dino_pop:
     def predict_action(self, model_index, input_data):
         '''
         Predicts what action to take when playing the game.
-        ''''
+        '''
         pass
 
     def reset_fitness(self):
