@@ -9,7 +9,7 @@ from pygame.locals import *
 
 class Dinosaur:
 
-    DINO_SIZE_STAND_X = 25
+    DINO_SIZE_STAND_X = 30
     DINO_SIZE_STAND_Y = 50
     DINO_POS_STAND_X = 50
     DINO_POS_STAND_Y = 250
@@ -87,7 +87,11 @@ class Dinosaur:
         # Decrease Jump going back down
         else:
             self.reachedTop = True
-            self.position[1] += 10
+        
+            if self.position[1] + 15 < self.DINO_POS_STAND_Y:
+                self.position[1] += 15
+            else:
+                self.position[1] = self.DINO_POS_STAND_Y
         
         # Stop jump once groun is reached
         if self.position[1] == self.DINO_POS_STAND_Y:
@@ -136,7 +140,7 @@ class Obs:
 
 # Constsnts for enemies
 GE = ((50, 50, 250), (25, 50, 250), (50, 25, 275), (60, 50, 250))
-FGE = ((50, 25, 225), (50, 25, 200), (25, 25, 225))
+FGE = ((50, 25, 225), (50, 25, 200), (25, 25, 250), (50, 25, 250))
 
 class ObsList:
 
@@ -245,10 +249,10 @@ class App:
         if self.tick_amt % self.random_spawn == 0:
             
             #self.enemy.add_random_enemy()
-            self.enemy.add_enemy(random.randint(0,6))
+            self.enemy.add_enemy(random.randint(0,7))
 
             # Change random spawn rate
-            self.random_spawn += random.randint(20, 40)
+            self.random_spawn += random.randint(30, 40)
 
         self.enemy.move_enemies(self.speed_modifier)
         self.enemy.remove_enemies()
@@ -266,7 +270,7 @@ class App:
         if self.tick_amt % 3 == 0:
             self.dino.score += 1
             # Modify speed
-            if self.dino.score == 100:
+            if self.dino.score % 100 == 0:
                 self.speed_modifier += 1
 
 

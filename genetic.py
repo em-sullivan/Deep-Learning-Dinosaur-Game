@@ -29,7 +29,7 @@ def mutate(chromosome):
     Mutate the genes chromosome by randomly modifying values.
     For the dino game, its the weights of the NN
     '''
-    for in range(len(chromosome)):
+    for i in range(len(chromosome)):
         for j in range(leng(chromosome[i])):
             if (random.uniform(0, 1) > 0.7):
                 change = random.uniform(-0.5, 0.5)

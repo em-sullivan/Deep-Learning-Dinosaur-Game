@@ -4,6 +4,8 @@ which will be used to play the snake game
 '''
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, Activation
+import numpy as np
+from genetic import *
 
 class dino_pop:
 
@@ -63,7 +65,9 @@ class dino_pop:
         '''
         Predicts what action to take when playing the game.
         '''
-        pass
+        input = np.atleast_2d(input_data)
+        output = self.dino_networks[model_index].predict(input, 1)
+        return output.argmax()
 
     def reset_fitness(self):
         '''
@@ -72,6 +76,37 @@ class dino_pop:
         '''       
         for i in range(self.population_size):
             self.fitness[i] = 0
+
+    def genetic_update(self):
+        '''
+        Peform genetic algorithm, do model corssover,
+        mutation, generate new population
+        '''
+
+        # Calculate total fintess for roulette selection
+        total_fitenss = sum(self.fitness)
+        new_population = []
+    
+        # Generate new population
+        for i in range(len(self.population_size) // 2):
+
+            # Pick two parents from random selection
+            parent_1 = roulette_selection(fitness, total_fitness)
+            parent_2 = roulette_selection(fitness, total_fitness)
+
+            # Model crossover
+            new = model_corssover(population[parent_1].get_weights(), population[parent_2].get_weights())
+
+            # Mutation
+            update_g1 = mutate(new[0])
+            update_g2 = mutate(new[1])
+            new_population.append(update_g1)
+            new_population.append(update_g2)
+
+    
+        # Set new popluation
+        for i in range(len(population)):
+            population[i].set_weights(new_population[i])
 
     
 
@@ -85,4 +120,6 @@ if __name__ == "__main__":
         print(dinos.fitness[i])
 
     # Print weights of a neural network, I want to make sure it works
-    print(dinos.dino_networks[49].get_weights())
+    #print(dinos.dino_networks[49].get_weights())
+    # Predict action
+    print(dinos.predict_action(0, [275, 0, 40, 250, 50, 50]))
