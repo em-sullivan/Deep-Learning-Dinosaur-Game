@@ -45,14 +45,22 @@ class NN_Play:
         self.score_font = pygame.font.SysFont('mono', 20)
 
     def reset(self):
-        self.dino.socre = 0
+        self._running = True
+        self._display_surf = None
+        self.size = self.width, self.height = 640, 400
+        self.clock = None
         self.speed_modifier = 0
         self.random_spawn = 60
 
-        # Create new obs list
-        del self.enemy
+        # Player
+        self.dino = Dinosaur()
+
+        # Test - list of obsticalts
         self.enemy = ObsList()
-        self.enemy.add_random_enemy()
+
+        # Tick amount for score, spawn stuff
+        self.tick_amt = 1
+       
 	
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -73,7 +81,7 @@ class NN_Play:
         else:
             self.dino.ducking = False
 
-    def on_loop(self):
+    def on_loop(self, nn, index):
 
         # Check current position (well, its really the size right not) of dina
         self.dino.check_positiion()
@@ -91,15 +99,20 @@ class NN_Play:
         self.enemy.move_enemies(self.speed_modifier)
         self.enemy.remove_enemies()
         
-        for current_enemy in self.enemy.enemies:
-            self.dino.check_hit(current_enemy)
+        #for current_enemy in self.enemy.enemies:
+            #self.dino.check_hit(current_enemy)
 
         # Print dino frame data for the nearest enemy
         for current_enemy in self.enemy.enemies:
             if current_enemy.pos[0] - self.dino.position[0] > 0:
-                print(self.dino.dino_data(current_enemy, self.speed_modifier))
+                self.dino.check_hit(current_enemy)
+                #print(nn.predict_action(index, self.dino.dino_data(current_enemy, self.speed_modifier)))
+                self.map_action(nn.predict_action(index, self.dino.dino_data(current_enemy, self.speed_modifier)))
+                #print(self.dino.dino_data(current_enemy, self.speed_modifier))
                 break
         
+        # Predict action
+
         # Update player score
         if self.tick_amt % 3 == 0:
             self.dino.score += 1
@@ -107,6 +120,20 @@ class NN_Play:
             if self.dino.score % 100 == 0:
                 self.speed_modifier += 1
 
+    def map_action(self, action_index):
+
+        if action_index == 0:
+            # Go down
+            self.dino.ducking = True
+
+        elif action_index == 1:
+            # Can't Jump when ducking!
+            if self.dino.ducking is False:
+                #print("Jump!")
+                self.dino.jumping = True
+
+        else:
+            self.dino.ducking = False
 
     def on_render(self):
         # White Background
@@ -132,7 +159,8 @@ class NN_Play:
 
 
     def on_cleanup(self):
-        pygame.quit()
+        #pygame.quit()
+        self.reset
 
     def on_execute(self, nn, index):
 
@@ -143,7 +171,8 @@ class NN_Play:
 
             for event in pygame.event.get():
                 self.on_event(event)
-            self.on_loop()
+
+            self.on_loop(nn, index)
             self.on_render()
             self.clock.tick(30)
             self.tick_amt += 1
@@ -155,10 +184,10 @@ if __name__ == "__main__":
 
     population_size = 6
     nn = dino_pop(population_size)
-
+    
     for current in range(population_size):
         game = NN_Play()
         game.on_execute(nn, current)
-
+       
     genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
     print(nn.fitness)
