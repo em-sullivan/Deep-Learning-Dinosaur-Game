@@ -9,6 +9,8 @@ Main function to run
 #from game import ObsList
 
 from game import *
+from neural_network import *
+import genetic
 
 class NN_Play:
 
@@ -41,6 +43,16 @@ class NN_Play:
 
         # Init for text
         self.score_font = pygame.font.SysFont('mono', 20)
+
+    def reset(self):
+        self.dino.socre = 0
+        self.speed_modifier = 0
+        self.random_spawn = 60
+
+        # Create new obs list
+        del self.enemy
+        self.enemy = ObsList()
+        self.enemy.add_random_enemy()
 	
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -122,7 +134,7 @@ class NN_Play:
     def on_cleanup(self):
         pygame.quit()
 
-    def on_execute(self):
+    def on_execute(self, nn, index):
 
         if self.on_init() == False:
             self._running = False
@@ -136,8 +148,17 @@ class NN_Play:
             self.clock.tick(30)
             self.tick_amt += 1
         
+        nn.fitness[index] = self.dino.score
         self.on_cleanup()
 
 if __name__ == "__main__":
-    game = NN_Play()
-    game.on_execute()
+
+    population_size = 6
+    nn = dino_pop(population_size)
+
+    for current in range(population_size):
+        game = NN_Play()
+        game.on_execute(nn, current)
+
+    genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
+    print(nn.fitness)

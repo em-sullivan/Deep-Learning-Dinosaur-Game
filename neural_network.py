@@ -5,7 +5,6 @@ which will be used to play the snake game
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, Activation
 import numpy as np
-from genetic import *
 
 class dino_pop:
 
@@ -76,40 +75,6 @@ class dino_pop:
         '''       
         for i in range(self.population_size):
             self.fitness[i] = 0
-
-    def genetic_update(self):
-        '''
-        Peform genetic algorithm, do model corssover,
-        mutation, generate new population
-        '''
-
-        # Calculate total fintess for roulette selection
-        total_fitenss = sum(self.fitness)
-        new_population = []
-    
-        # Generate new population
-        for i in range(len(self.population_size) // 2):
-
-            # Pick two parents from random selection
-            parent_1 = roulette_selection(fitness, total_fitness)
-            parent_2 = roulette_selection(fitness, total_fitness)
-
-            # Model crossover
-            new = model_corssover(population[parent_1].get_weights(), population[parent_2].get_weights())
-
-            # Mutation
-            update_g1 = mutate(new[0])
-            update_g2 = mutate(new[1])
-            new_population.append(update_g1)
-            new_population.append(update_g2)
-
-    
-        # Set new popluation
-        for i in range(len(population)):
-            population[i].set_weights(new_population[i])
-
-    
-
 
 if __name__ == "__main__":
     population_size = 50

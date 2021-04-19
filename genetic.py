@@ -10,80 +10,71 @@ for now
 import numpy as np
 import random
 
-def model_crossover(parent_1, parent_2):
+def model_crossover(current_pool, parent_1, parent_2):
     '''
-    Produce offspring based on parents
+    Produce offspring based on the best parents
     '''
+    # Weight of parents
+    weight1 = current_pool[parent_1].get_weights()
+    weight2 = current_pool[parent_2].get_weights()
+    new_weight1 = weight1
+    new_weight2 = weight2
 
-    new_genes1 = parent_1 
-    new_genes2 = parent_2
+    # Gene
+    gene = random.randint(0, len(new_weight1) - 1)
 
-    gene = random.randint(0, len(new_genes1) - 1)
+    new_weight1[gene] = weight2[gene]
+    new_weight2[gene] = weight1[gene]
+    return np.asarray([new_weight1, new_weight2])
 
-    new_genes1[gene] = parent_2[gene]
-    new_genes2[gene] = parent_1[gene]
-    return np.asarray([new_genes1, new_genes2])
-
-def mutate(chromosome):
+def model_mutate(weights):
     '''
-    Mutate the genes chromosome by randomly modifying values.
-    For the dino game, its the weights of the NN
+    Mutate the weights of a model
     '''
-    for i in range(len(chromosome)):
-        for j in range(leng(chromosome[i])):
-            if (random.uniform(0, 1) > 0.7):
-                change = random.uniform(-0.5, 0.5)
-                chromosome[i][j] += change
+    for i in range(len(weights)):
+        for j in range(len(weights[i])):
+            if (random.uniform(0, 1) > .7):
+                change = random.uniform(-.5,.5)
+                weights[i][j] += change
+    
+    return weights
 
-def roulette_selection(fitness, total_fitness):
-    '''
-    Choose a random Chromosome from the population.
-    Has a higher chance of picking one with a higher fitness value
-    '''
-
+def roulette_selection(fitness, total_fitness, pop_size):
     choice = random.randint(0, total_fitness)
-    chromosome = 0
-    current = 0
+    parent = 0
 
-    # This currentlly assumes that the fitness is a list
-    # of fitness values
-    for idx in range(len(fitness)):
+    current = 0
+    for idx in range(pop_size):
         current += fitness[idx]
         if current > choice:
-            chromosome = idx
+            parent = idx
             break
+
+    return parent
+
+
+def genetic_updates(current_pool, fitness, pop_size):
+
+    new_weights = []
+    # Calculate total fitness
+    total_fitness = sum(fitness)
     
-    # Index of chromosome in population
-    return idx
+    # Breeding time
+    for i in range(pop_size // 2):
+        # Pick two parents
+        parent_1 = roulette_selection(fitness, total_fitness, pop_size)
+        parent_2 = roulette_selection(fitness, total_fitness, pop_size)
+  
+        # Model crossover between two parents
+        new = model_crossover(current_pool, parent_1, parent_2)
+        
+        # Mutate models
+        update_w1 = model_mutate(new[0])
+        update_w2 = model_mutate(new[1])
+        new_weights.append(update_w1)
+        new_weights.append(update_w2)
 
-
-def genetic_algorithm(population, fitness):
-    '''
-    Peform genetic algorithm, do model corssover,
-    mutation, generate new population
-    '''
-
-    # Calculate total fintess for roulette selection
-    total_fitenss = sum(fitness)
-    new_population = []
-    
-    # Generate new population
-    for i in range(len(population) // 2):
-
-        # Pick two parents from random selection
-        parent_1 = roulette_selection(fitness, total_fitness)
-        parent_2 = roulette_selection(fitness, total_fitness)
-
-        # Model crossover
-        new = model_corssover(population[parent_1], population[parent_2])
-
-        # Mutation
-        update_g1 = mutate(new[0])
-        update_g2 = mutate(new[1])
-        new_population.append(update_g1)
-        new_population.append(update_g2)
-
-    
-    # Set new popluation
-    for i in range(len(population)):
-        population[i] = new_population[i]
+    # Set new weights, reset fitness
+    for i in range(len(new_weights)):
+        current_pool[i].set_weights(new_weights[i])
+    return
