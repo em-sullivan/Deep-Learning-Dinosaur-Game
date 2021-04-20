@@ -107,6 +107,8 @@ class NN_Play:
             if current_enemy.pos[0] - self.dino.position[0] > 0:
                 self.dino.check_hit(current_enemy)
                 #print(nn.predict_action(index, self.dino.dino_data(current_enemy, self.speed_modifier)))
+
+                # NN predicts which action to perform, may move this to another part, maybe the beginning of on_loop?
                 self.map_action(nn.predict_action(index, self.dino.dino_data(current_enemy, self.speed_modifier)))
                 #print(self.dino.dino_data(current_enemy, self.speed_modifier))
                 break
@@ -182,12 +184,15 @@ class NN_Play:
 
 if __name__ == "__main__":
 
-    population_size = 6
+    population_size = 50
     nn = dino_pop(population_size)
     
-    for current in range(population_size):
-        game = NN_Play()
-        game.on_execute(nn, current)
+    while True:
+        for current in range(population_size):
+            game = NN_Play()
+            game.on_execute(nn, current)
        
-    genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
-    print(nn.fitness)
+        # Perform genetic update, reset fitness
+        genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
+        print(nn.fitness)
+        nn.reset_fitness()
