@@ -51,14 +51,16 @@ class dino_pop:
     def save_pop(self, save_location):
 
         for i in range(self.population_size):
-            self.dino_networks[i].save_weights(save_location + str(i) + ".keras")
+            self.dino_networks[i].save_weights(save_location + "/model" + str(i) + ".keras")
         
         print("Pool Saved")
 
     def load_pop(self, load_location):
 
         for i in range(self.population_size):
-            self.dino_networks[i].load_weights(load_location + str(i) + ".keras")
+            self.dino_networks[i].load_weights(load_location + "/model" + str(i) + ".keras")
+
+        print("Pool Loaded")
 
     def predict_action(self, model_index, input_data):
         '''
@@ -77,6 +79,7 @@ class dino_pop:
             self.fitness[i] = 0
 
 if __name__ == "__main__":
+
     population_size = 50
 
     dinos = dino_pop(50)

@@ -21,6 +21,7 @@ class NN_Play:
         self.clock = None
         self.speed_modifier = 0
         self.random_spawn = 60
+        self.end = False
 
         # Player
         self.dino = Dinosaur()
@@ -67,6 +68,11 @@ class NN_Play:
             self._running = False
 
         if event.type == pygame.KEYDOWN:
+
+            if event.key == K_q:
+                self._running = False
+                self.end = True
+            '''
             if event.key == K_DOWN:
                 # Duck or cancel jump
                 #print("Down!")
@@ -80,6 +86,8 @@ class NN_Play:
 
         else:
             self.dino.ducking = False
+            '''
+        
 
     def on_loop(self, nn, index):
 
@@ -104,7 +112,7 @@ class NN_Play:
 
         # Print dino frame data for the nearest enemy
         for current_enemy in self.enemy.enemies:
-            if current_enemy.pos[0] - self.dino.position[0] > 0:
+            if current_enemy.pos[0] + current_enemy.width - self.dino.position[0] > 0:
                 self.dino.check_hit(current_enemy)
                 #print(nn.predict_action(index, self.dino.dino_data(current_enemy, self.speed_modifier)))
 
@@ -184,15 +192,31 @@ class NN_Play:
 
 if __name__ == "__main__":
 
+    save = False
+    load = True
+    save_location = "Saved_Models/test"
+    load_location = "Saved_Models/test"
+
     population_size = 50
     nn = dino_pop(population_size)
+
+    if load is True:
+        nn.load_pop(load_location)
     
     while True:
         for current in range(population_size):
             game = NN_Play()
             game.on_execute(nn, current)
+            if game.end is True:
+                break
        
+        if game.end is True:
+            if save is True:
+                nn.save_pop(save_location)
+            break
+        
         # Perform genetic update, reset fitness
+        print("Highest Score: " + str(max(nn.fitness)))
         genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
         print(nn.fitness)
         nn.reset_fitness()
