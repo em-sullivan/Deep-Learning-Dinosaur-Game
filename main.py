@@ -11,6 +11,7 @@ Main function to run
 from game import *
 from neural_network import *
 import genetic
+import numpy as np
 
 class NN_Play:
 
@@ -192,24 +193,28 @@ class NN_Play:
 
 if __name__ == "__main__":
 
-    save = False
-    load = True
-    save_location = "Saved_Models/test"
+    # to track number of generations
+    generations = 0
+
+    save = True
+    load = False
+    save_location = "Saved_Models/testa"
     load_location = "Saved_Models/test"
 
-    population_size = 50
+    population_size = 3
     nn = dino_pop(population_size)
 
     if load is True:
         nn.load_pop(load_location)
     
-    while True:
+    while generations < 200:
         for current in range(population_size):
             game = NN_Play()
             game.on_execute(nn, current)
             if game.end is True:
                 break
        
+       # if user presses 'q' to quit
         if game.end is True:
             if save is True:
                 nn.save_pop(save_location)
@@ -217,6 +222,14 @@ if __name__ == "__main__":
         
         # Perform genetic update, reset fitness
         print("Highest Score: " + str(max(nn.fitness)))
+        print("Average Score: " + str(np.mean(nn.fitness)))
+        print("Number of generations: " + str(generations))
         genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
         print(nn.fitness)
         nn.reset_fitness()
+
+        generations += 1
+
+    # if max generations is hit
+    if save == True:
+        nn.save_pop(save_location)

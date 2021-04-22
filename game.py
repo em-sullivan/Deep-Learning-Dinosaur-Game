@@ -113,11 +113,18 @@ class Dinosaur:
         '''
         Input data the will go into neuarl network
         '''
+        # Input Layer 5:
+        # Speed
+        # Y-Position
+        # Distance to nearest Object
+        # Height of nearest Object
+        # Length of nearest object
+        # Width of Nearest Object
         dataframe = []
         dataframe.append(self.position[1])
         dataframe.append(speed)
         dataframe.append(obs.pos[0] - self.position[0])
-        dataframe.append(obs.pos[1])
+        dataframe.append(300 - obs.pos[1] - obs.length)
         dataframe.append(obs.length)
         dataframe.append(obs.width)
 
@@ -139,8 +146,9 @@ class Obs:
         pygame.draw.rect(surface, (0, 0, 0), body)
 
 # Constsnts for enemies
-GE = ((50, 50, 250), (25, 50, 250), (50, 25, 275), (60, 50, 250))
-FGE = ((50, 25, 225), (50, 25, 200), (25, 25, 250), (50, 25, 250))
+# width, length, y-height
+GE = ((50, 50, 250), (25, 50, 250), (50, 25, 275), (50, 40, 260))
+FGE = ((50, 25, 225), (25, 25, 250), (50, 25, 250), (50, 25, 225)) # (50, 25, 200),
 
 class ObsList:
 
