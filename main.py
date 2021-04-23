@@ -196,18 +196,18 @@ if __name__ == "__main__":
     # to track number of generations
     generations = 0
 
-    save = True
-    load = False
+    save = False
+    load = True
     save_location = "Saved_Models/testa"
-    load_location = "Saved_Models/test"
+    load_location = "Saved_Models/testa"
 
-    population_size = 3
+    population_size = 50
     nn = dino_pop(population_size)
 
     if load is True:
         nn.load_pop(load_location)
-    
-    while generations < 200:
+
+    while generations < 250:
         for current in range(population_size):
             game = NN_Play()
             game.on_execute(nn, current)
