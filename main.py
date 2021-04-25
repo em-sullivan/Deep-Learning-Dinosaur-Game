@@ -196,12 +196,13 @@ if __name__ == "__main__":
     # to track number of generations
     generations = 0
 
-    save = False
-    load = True
-    save_location = "Saved_Models/testa"
-    load_location = "Saved_Models/testa"
+    save = True
+    load = False
+    save_location = "Saved_Models/testb"
+    load_location = "Saved_Models/testb"
+    results_save_location = "Saved_Models/resultsb.txt"
 
-    population_size = 50
+    population_size = 2
     nn = dino_pop(population_size)
 
     if load is True:
@@ -224,6 +225,14 @@ if __name__ == "__main__":
         print("Highest Score: " + str(max(nn.fitness)))
         print("Average Score: " + str(np.mean(nn.fitness)))
         print("Number of generations: " + str(generations))
+        # Open file and save results for further analysis
+        file = open(results_save_location, "a+")
+        file.write(str(generations) + "," + str(max(nn.fitness)) + "," + str(np.mean(nn.fitness)) + "\n")
+        file.close()
+        # Save every generation for safety
+        if save_location:
+            nn.save_pop(save_location)
+
         genetic.genetic_updates(nn.dino_networks, nn.fitness, nn.population_size)
         print(nn.fitness)
         nn.reset_fitness()
